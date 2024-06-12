@@ -1,0 +1,22 @@
+{
+  "name": "typescript-design-patterns-manik-course",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "(npx parcel ./index.html) & npx parcel watch ./index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TIOwilsu/typescript-design-patterns-manik-course.git"
+  },
+  "author": "Wilson Queiroz Rocha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TIOwilsu/typescript-design-patterns-manik-course/issues"
+  },
+  "homepage": "https://github.com/TIOwilsu/typescript-design-patterns-manik-course#readme",
+  "devDependencies": {
+    "parcel": "^2.10.2"
+  }
+}
