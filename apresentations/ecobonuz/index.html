@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-witdh, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compartible" content="ie-edge">
+    <title>Flexbox</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    
+    <!-- Add this to <head> -->
+
+    <!-- Load required Bootstrap and BootstrapVue CSS -->
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css" />
+
+    <!-- Load polyfills to support older browsers -->
+    <script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
+
+    <!-- Load Vue followed by BootstrapVue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+
+    <!-- Load the following for BootstrapVueIcons support -->
+    <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+    <style>
+        .box{
+            background-color: var(--blue);
+            display: flex;
+            color: var(--white);
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            height: 100%;
+            width: 100%;
+        }
+        .green{
+            color: var(--green);
+        }
+        .text-shadow-none{
+            text-shadow: none;
+        }
+        .carousel-inner .carousel-item .carousel-caption{
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            top:50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body class="position-fixed w-100 h-100">
+    <div id="app">
+        <b-carousel
+            id="carousel-1"
+            v-model="slide"
+            :interval="0"
+            indicators
+            background="#ababab"
+            img-width="1024"
+            img-height="400"
+            style="text-shadow: 1px 1px 2px #333;"
+            class="position-absolute w-100 h-100"
+        >
+        <b-carousel-slide
+            img-blank
+            img-alt="Blank image"
+        >
+            <h1>Flexbox</h1>
+        </b-carousel-slide>
+        <b-carousel-slide
+            v-for="(type, index) in types"
+            :key="index"
+            img-blank
+            :caption="type.title"
+            img-alt="Blank image"
+        >
+            <b-card no-body class="w-100 text-shadow-none">
+                <b-tabs pills card vertical>
+                    <b-tab 
+                        v-for="(prop, index) in type.props"
+                        :key="index"
+                        :title="prop.title" 
+                        :active="index === 0 ? true : false"
+                    >
+                        <b-card-text>
+                            <b-card 
+                                no-body 
+                                v-if="prop.values" 
+                            >
+                                <b-tabs pills card>
+                                    <b-tab
+                                        v-for="(value, index) in prop.values" 
+                                        :key="index" 
+                                        :title="value.title" 
+                                        :active="index === 0 ? true : false"
+                                    >
+                                        <b-card-text>
+                                            <b-row class="text-left">
+                                                <b-col cols="12" class="d-flex flex-wrap">
+                                                    <p 
+                                                        v-for="(text, index) in value.texts"
+                                                        class="green flex-grow-1"
+                                                    >
+                                                        {{ text }}
+                                                    </p>
+                                                </b-col>
+                                                <b-col cols="12">
+                                                    <h6 class="text-body">Exemplo:</h6>
+                                                    <div :class="`d-flex border ${value.example.class}`" :style="value.example.style">
+                                                        <div 
+                                                            v-for="(item,index) in value.example.items" 
+                                                            :key="index"
+                                                            :class="item.class"
+                                                            :style="item.style"
+                                                        >
+                                                            <div class="box">{{ index + 1}}</div>
+                                                        </div>
+                                                    </div>
+                                                </b-col>
+                                            </b-row>
+                                        </b-card-text>
+                                    </b-tab>
+                                </b-tabs>
+                            </b-card>
+                            <b-row class="text-left" v-else>
+                                <b-col cols="12" class="d-flex flex-wrap">
+                                    <p 
+                                        v-for="(text, index) in prop.texts"
+                                        class="green flex-grow-1"
+                                    >
+                                        {{ text }}
+                                    </p>
+                                </b-col>
+                                <b-col cols="12">
+                                    <h6 class="text-body">Exemplo:</h6>
+                                    <div v-html="prop.example"></div>
+                                </b-col>
+                            </b-row>
+                        </b-card-text>
+                    </b-tab>
+                </b-tabs>
+            </b-card>
+        </b-carousel-slide>
+        </b-carousel>
+    </div>
+</body>
+<script>
+    const vm = new Vue({
+        el: '#app',
+        data() {
+            return {
+                slide: 0,
+                sliding: null
+            }
+        },
+        computed: {
+            types(){
+                return [
+                    {
+                        title: 'Flex Container',
+                        props:[
+                            { 
+                                title: 'display',
+                                texts: [
+                                    '// display: flex',
+                                    '// Bootstrap: .d-flex',
+                                    '// Vuetify: .d-flex' 
+                                ],
+                                example: '<div class="box">item</div>'
+                            },
+                            { 
+                                title: 'flex-direction',
+                                values: [
+                                    { 
+                                        title: 'row',
+                                        texts: [
+                                            '// flex-direction: row',
+                                            '// Bootstrap: .flex-row',
+                                            '// Vuetify: .flex-row'
+                                        ],
+                                        example: {
+                                            class: 'flex-row',
+                                            items: [
+                                                { class: 'p-1' },
+                                                { class: 'p-1' },
+                                                { class: 'p-1' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'row-reverse',
+                                        texts: [
+                                            '// flex-direction: row-reverse',
+                                            '// Bootstrap: .flex-row-reverse',
+                                            '// Vuetify: .flex-row-reverse'
+                                        ],
+                                        example: {
+                                            class: 'flex-row-reverse',
+                                            items: [
+                                                { class: 'p-1' },
+                                                { class: 'p-1' },
+                                                { class: 'p-1' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'column',
+                                        texts: [
+                                            '// flex-direction: column',
+                                            '// Bootstrap: .flex-column',
+                                            '// Vuetify: .flex-column'
+                                        ],
+                                        example: {
+                                            class: 'flex-column',
+                                            items: [
+                                                { class: 'p-1' },
+                                                { class: 'p-1' },
+                                                { class: 'p-1' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'column-reverse',
+                                        texts: [
+                                            '// flex-direction: column-reverse',
+                                            '// Bootstrap: .flex-column-reverse',
+                                            '// Vuetify: .flex-column-reverse'
+                                        ],
+                                        example: {
+                                            class: 'flex-column-reverse',
+                                            items: [
+                                                { class: 'p-1' },
+                                                { class: 'p-1' },
+                                                { class: 'p-1' }
+                                            ]
+                                        } 
+                                    }
+                                ],
+                            },
+                            { 
+                                title: 'flex-wrap', 
+                                values: [
+                                    { 
+                                        title: 'nowrap',
+                                        texts: [
+                                            '// flex-wrap: nowrap',
+                                            '// Bootstrap: .flex-nowrap',
+                                            '// Vuetify: .flex-nowrap'
+                                        ],
+                                        example: {
+                                            class: 'flex-nowrap',
+                                            items: [
+                                                { class: 'p-1' },
+                                                { class: 'p-1' },
+                                                { class: 'p-1' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'wrap',
+                                        texts: [
+                                            '// flex-wrap: wrap',
+                                            '// Bootstrap: .flex-wrap',
+                                            '// Vuetify: .flex-wrap'
+                                        ],
+                                        example: {
+                                            class: 'flex-wrap',
+                                            items: [
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-100' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'wrap-reverse',
+                                        texts: [
+                                            '// flex-wrap: wrap-reverse',
+                                            '// Bootstrap: .flex-wrap-reverse',
+                                            '// Vuetify: .flex-wrap-reverse'
+                                        ],
+                                        example: {
+                                            class: 'flex-wrap-reverse',
+                                            items: [
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-100' }
+                                            ]
+                                        } 
+                                    }
+                                ]
+                            },
+                            { 
+                                title: 'flex-flow',
+                                values: [
+                                    { 
+                                        title: 'row nowrap',
+                                        texts: [
+                                            '// flex-flow: row nowrap',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            style: { flexFlow: 'row nowrap' },
+                                            items: [
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-100' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'column nowrap',
+                                        texts: [
+                                            '// flex-flow: column nowrap',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            style: { flexFlow: 'column nowrap' },
+                                            items: [
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-100' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'row wrap',
+                                        texts: [
+                                            '// flex-flow: row wrap',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            style: { flexFlow: 'row wrap' },
+                                            items: [
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-50' },
+                                                { class: 'p-1 w-100' }
+                                            ]
+                                        } 
+                                    }
+                                ]
+                            },
+                            { 
+                                title: 'justify-content',
+                                values: [
+                                    { 
+                                        title: 'flex-start',
+                                        texts: [
+                                            '// justify-content: flex-start',
+                                            '// Bootstrap: .justify-content-start',
+                                            '// Vuetify: .justify-start'
+                                        ],
+                                        example: {
+                                            class: 'justify-content-start',
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'flex-end',
+                                        texts: [
+                                            '// justify-content: flex-end',
+                                            '// Bootstrap: .justify-content-end',
+                                            '// Vuetify: .justify-end'
+                                        ],
+                                        example: {
+                                            class: 'justify-content-end',
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'center',
+                                        texts: [
+                                            '// justify-content: center',
+                                            '// Bootstrap: .justify-content-center',
+                                            '// Vuetify: .justify-center'
+                                        ],
+                                        example: {
+                                            class: 'justify-content-center',
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'space-between',
+                                        texts: [
+                                            '// justify-content: space-between',
+                                            '// Bootstrap: .justify-content-between',
+                                            '// Vuetify: .justify-space-between'
+                                        ],
+                                        example: {
+                                            class: 'justify-content-between',
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'space-around',
+                                        texts: [
+                                            '// justify-content: space-around',
+                                            '// Bootstrap: .justify-content-around',
+                                            '// Vuetify: .justify-space-around'
+                                        ],
+                                        example: {
+                                            class: 'justify-content-around',
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    }
+                                ]
+                            },
+                            { 
+                                title: 'align-items',
+                                values: [
+                                    { 
+                                        title: 'stretch',
+                                        texts: [
+                                            '// align-items: stretch',
+                                            '// Bootstrap: .align-items-stretch',
+                                            '// Vuetify: .align-stretch'
+                                        ],
+                                        example: {
+                                            class: 'align-items-stretch',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'flex-start',
+                                        texts: [
+                                            '// align-items: flex-start',
+                                            '// Bootstrap: .align-items-start',
+                                            '// Vuetify: .align-start'
+                                        ],
+                                        example: {
+                                            class: 'align-items-start',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'flex-end',
+                                        texts: [
+                                            '// align-items: flex-end',
+                                            '// Bootstrap: .align-items-end',
+                                            '// Vuetify: .align-end'
+                                        ],
+                                        example: {
+                                            class: 'align-items-end',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'center',
+                                        texts: [
+                                            '// align-items: flex-center',
+                                            '// Bootstrap: .align-items-center',
+                                            '// Vuetify: .align-center'
+                                        ],
+                                        example: {
+                                            class: 'align-items-center',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'baseline',
+                                        texts: [
+                                            '// align-items: flex-baseline',
+                                            '// Bootstrap: .align-items-baseline',
+                                            '// Vuetify: .align-baseline'
+                                        ],
+                                        example: {
+                                            class: 'align-items-baseline',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                ]
+                            },
+                            { 
+                                title: 'align-content' ,
+                                values: [
+                                    { 
+                                        title: 'stretch',
+                                        texts: [
+                                            '// align-content: stretch',
+                                            '// Bootstrap: .align-content-stretch',
+                                            '// Vuetify: .align-content-stretch'
+                                        ],
+                                        example: {
+                                            class: 'flex-wrap align-content-stretch',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-100' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'flex-start',
+                                        texts: [
+                                            '// align-content: flex-start',
+                                            '// Bootstrap: .align-content-start',
+                                            '// Vuetify: .align-content-start'
+                                        ],
+                                        example: {
+                                            class: 'flex-wrap align-content-start',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-100' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'flex-end',
+                                        texts: [
+                                            '// align-content: flex-end',
+                                            '// Bootstrap: .align-content-end',
+                                            '// Vuetify: .align-content-end'
+                                        ],
+                                        example: {
+                                            class: 'flex-wrap align-content-end',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-100' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'center',
+                                        texts: [
+                                            '// align-content: center',
+                                            '// Bootstrap: .align-content-center',
+                                            '// Vuetify: .align-content-center'
+                                        ],
+                                        example: {
+                                            class: 'flex-wrap align-content-center',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-100' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'space-between',
+                                        texts: [
+                                            '// align-content: space-between',
+                                            '// Bootstrap: .align-content-between',
+                                            '// Vuetify: .align-content-space-between'
+                                        ],
+                                        example: {
+                                            class: 'flex-wrap align-content-between',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-100' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'space-around',
+                                        texts: [
+                                            '// align-content: space-around',
+                                            '// Bootstrap: .align-content-around',
+                                            '// Vuetify: .align-content-space-around'
+                                        ],
+                                        example: {
+                                            class: 'flex-wrap align-content-around',
+                                            style: { height: '150px'},
+                                            items: [
+                                                { class: 'p-1 w-100' },
+                                                { class: 'p-1 w-25' },
+                                                { class: 'p-1 w-25' }
+                                            ]
+                                        } 
+                                    }
+                                ]
+                            },
+                        ]
+                    },  
+                    {
+                        title: 'Flex Item',
+                        props: [
+                            { 
+                                title: 'flex-grow',
+                                values: [
+                                    { 
+                                        title: '0',
+                                        texts: [
+                                            '// flex-grow: 0',
+                                            '// Bootstrap: .flex-grow-0',
+                                            '// Vuetify: .flex-grow-0'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1 flex-grow-0' },
+                                                { class: 'p-1 flex-grow-0' },
+                                                { class: 'p-1 flex-grow-0' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: '1',
+                                        texts: [
+                                            '// flex-grow: 1',
+                                            '// Bootstrap: .flex-grow-1',
+                                            '// Vuetify: .flex-grow-1'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1 flex-grow-1' },
+                                                { class: 'p-1 flex-grow-1' },
+                                                { class: 'p-1 flex-grow-1' }
+                                            ]
+                                        } 
+                                    },
+                                ]
+                            },
+                            { 
+                                title: 'flex-basis',
+                                values: [
+                                    { 
+                                        title: 'auto',
+                                        texts: [
+                                            '// flex-basis: auto',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1', style: { flexBasis: 'auto' } },
+                                                { class: 'p-1', style: { flexBasis: 'auto' } },
+                                                { class: 'p-1', style: { flexBasis: 'auto' } }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'unidade',
+                                        texts: [
+                                            '// flex-basis: %, em, px e etc',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1', style: { flexBasis: '25%' } },
+                                                { class: 'p-1', style: { flexBasis: '25%' } },
+                                                { class: 'p-1', style: { flexBasis: '50%' } }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: '0',
+                                        texts: [
+                                            '// flex-basis: 0',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1', style: { flexBasis: 0 } },
+                                                { class: 'p-1', style: { flexBasis: 0 } },
+                                                { class: 'p-1', style: { flexBasis: 0 } }
+                                            ]
+                                        } 
+                                    }
+                                ]
+                            },
+                            { 
+                                title: 'flex-shrink',
+                                values: [
+                                    { 
+                                        title: '0',
+                                        texts: [
+                                            '// flex-shrink: 0',
+                                            '// Bootstrap: .flex-shrink-0',
+                                            '// Vuetify: .flex-shrink-0'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1 flex-shrink-0' },
+                                                { class: 'p-1 flex-shrink-0' },
+                                                { class: 'p-1 flex-shrink-0' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: '1',
+                                        texts: [
+                                            '// flex-shrink: 1',
+                                            '// Bootstrap: flex-shrink-1',
+                                            '// Vuetify: flex-shrink-1'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1 flex-shrink-1' },
+                                                { class: 'p-1 flex-shrink-1' },
+                                                { class: 'p-1 flex-shrink-1' }
+                                            ]
+                                        } 
+                                    },
+                                ]
+                            },
+                            { 
+                                title: 'flex',
+                                values: [
+                                    { 
+                                        title: '1',
+                                        texts: [
+                                            '// flex: 1',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1', style: { flex: 1 } },
+                                                { class: 'p-1', style: { flex: 1 } },
+                                                { class: 'p-1', style: { flex: 1 } }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: '0 1 auto',
+                                        texts: [
+                                            '// flex: 0 1 auto',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1', style: { flex: '0 1 auto' } },
+                                                { class: 'p-1', style: { flex: '0 1 auto' } },
+                                                { class: 'p-1', style: { flex: '0 1 auto' } }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: '2',
+                                        texts: [
+                                            '// flex: 2',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1', style: { flex: 2 } },
+                                                { class: 'p-1', style: { flex: 2 } },
+                                                { class: 'p-1', style: { flex: 2 } }
+                                            ]
+                                        } 
+                                    }
+                                ]
+                            },
+                            { 
+                                title: 'order',
+                                values: [
+                                    { 
+                                        title: '0',
+                                        texts: [
+                                            '// order: 0',
+                                            '// Bootstrap: .order-0',
+                                            '// Vuetify: .order-0'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1 order-0' },
+                                                { class: 'p-1 order-0' },
+                                                { class: 'p-1 order-0' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'order-{número}',
+                                        texts: [
+                                            '// order: número',
+                                            '// Bootstrap: .order-{número}',
+                                            '// Vuetify: .order-{número}'
+                                        ],
+                                        example: {
+                                            items: [
+                                                { class: 'p-1 order-2' },
+                                                { class: 'p-1 order-1' },
+                                                { class: 'p-1 order-3' }
+                                            ]
+                                        } 
+                                    },
+                                ]
+                            },
+                            { 
+                                title: 'align-self',
+                                values: [
+                                    { 
+                                        title: 'auto',
+                                        texts: [
+                                            '// align-self: auto',
+                                            '// Bootstrap: Não possui classes utilitárias',
+                                            '// Vuetify: Não possui classes utilitárias'
+                                        ],
+                                        example: {
+                                            style: { height: '150px' },
+                                            items: [
+                                                { class: 'p-1', style: { alignSelf: 'auto' } },
+                                                { class: 'p-1', style: { alignSelf: 'auto' } },
+                                                { class: 'p-1', style: { alignSelf: 'auto' } }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'flex-start',
+                                        texts: [
+                                            '// align-self: flex-start',
+                                            '// Bootstrap: .align-self-start',
+                                            '// Vuetify: .align-self-start'
+                                        ],
+                                        example: {
+                                            style: { height: '150px' },
+                                            items: [
+                                                { class: 'p-1 align-self-start' },
+                                                { class: 'p-1 align-self-start' },
+                                                { class: 'p-1 align-self-start' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'flex-end',
+                                        texts: [
+                                            '// align-self: flex-end',
+                                            '// Bootstrap: .align-self-end',
+                                            '// Vuetify: .align-self-end'
+                                        ],
+                                        example: {
+                                            style: { height: '150px' },
+                                            items: [
+                                                { class: 'p-1 align-self-end' },
+                                                { class: 'p-1 align-self-end' },
+                                                { class: 'p-1 align-self-end' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'center',
+                                        texts: [
+                                            '// align-self: center',
+                                            '// Bootstrap: .align-self-center',
+                                            '// Vuetify: .align-self-center'
+                                        ],
+                                        example: {
+                                            style: { height: '150px' },
+                                            items: [
+                                                { class: 'p-1 align-self-center' },
+                                                { class: 'p-1 align-self-center' },
+                                                { class: 'p-1 align-self-center' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'baseline',
+                                        texts: [
+                                            '// align-self: baseline',
+                                            '// Bootstrap: .align-self-baseline',
+                                            '// Vuetify: .align-self-baseline'
+                                        ],
+                                        example: {
+                                            style: { height: '150px' },
+                                            items: [
+                                                { class: 'p-1 align-self-baseline' },
+                                                { class: 'p-1 align-self-baseline' },
+                                                { class: 'p-1 align-self-baseline' }
+                                            ]
+                                        } 
+                                    },
+                                    { 
+                                        title: 'stretch',
+                                        texts: [
+                                            '// align-self: stretch',
+                                            '// Bootstrap: .align-self-stretch',
+                                            '// Vuetify: .align-self-stretch'
+                                        ],
+                                        example: {
+                                            style: { height: '150px' },
+                                            items: [
+                                                { class: 'p-1 align-self-stretch' },
+                                                { class: 'p-1 align-self-stretch' },
+                                                { class: 'p-1 align-self-stretch' }
+                                            ]
+                                        } 
+                                    }
+                                ]
+                            }
+                        ]
+                    }   
+                ]
+            },
+            slides(){
+                return [
+                    { 
+                        caption: 'Flexbox'
+                    }
+                ]
+            }
+        }
+    })
+</script>
+</html>
