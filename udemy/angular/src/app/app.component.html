@@ -1,0 +1,12 @@
+<main class="app-component">
+    <div class="container">
+        <app-title  
+            *ngIf="pageData.title && pageData.description" 
+            [name]="pageData.title" 
+            [description]="pageData.description"
+        ></app-title>
+        <router-outlet></router-outlet>
+    </div>
+</main>
+<app-aside></app-aside>
+
